@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Mesh Simulator</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>⬡ Service Mesh Simulator</h1>
+    <span>click a node to toggle health · click send to route a request</span>
+  </header>
+
+  <div class="container">
+    <div class="left-col">
+      <div class="panel">
+        <h2>Send Request</h2>
+
+        <label>Proxy Mode</label>
+        <div class="mode-toggle">
+          <button class="mode-btn active" data-mode="l4" onclick="setMode('l4')">L4 (Transport)</button>
+          <button class="mode-btn" data-mode="l7" onclick="setMode('l7')">L7 (Application)</button>
+        </div>
+
+        <label>Source Service</label>
+        <select id="source"></select>
+
+        <label>Destination Service</label>
+        <select id="destination"></select>
+
+        <button class="btn btn-primary" onclick="sendRequest()">▶ Send Request</button>
+        <button class="btn btn-secondary" onclick="sendBurst()">⚡ Burst (10 requests)</button>
+      </div>
+
+      <div class="panel" style="margin-top: 24px;">
+        <h2>Load Balancer</h2>
+        <label>Service</label>
+        <select id="algo-service"></select>
+        <label>Algorithm</label>
+        <div class="algo-row">
+          <select id="algo-select">
+            <option value="round_robin">Round Robin</option>
+            <option value="least_connections">Least Connections</option>
+            <option value="random">Random</option>
+          </select>
+          <button onclick="setAlgorithm()">Apply</button>
+        </div>
+        <div id="algo-feedback" style="font-size:11px; color:#3fb950; height:16px;"></div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="panel">
+        <h2>Nodes <span style="font-weight:400; color:#484f58;">(click to toggle health)</span></h2>
+        <div class="nodes-grid" id="nodes-grid"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Last Trace</h2>
+        <div class="trace-box" id="trace-box">
+          <span class="trace-empty">No requests sent yet.</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Request Log</h2>
+        <div class="log-box" id="log-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

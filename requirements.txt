@@ -1,0 +1,8 @@
+fastapi==0.111.0
+uvicorn==0.29.0
+prometheus_client==0.20.0
+websockets==12.0
+httpx
+opentelemetry-sdk
+opentelemetry-api
+opentelemetry-exporter-otlp-proto-grpc

@@ -1,0 +1,126 @@
+x-node-healthcheck: &node-healthcheck
+  test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+  interval: 2s
+  timeout: 1s
+  retries: 5
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      rides-1:         { condition: service_healthy }
+      rides-2:         { condition: service_healthy }
+      rides-3:         { condition: service_healthy }
+      payments-1:      { condition: service_healthy }
+      payments-2:      { condition: service_healthy }
+      payments-3:      { condition: service_healthy }
+      maps-1:          { condition: service_healthy }
+      maps-2:          { condition: service_healthy }
+      maps-3:          { condition: service_healthy }
+      auth-1:          { condition: service_healthy }
+      auth-2:          { condition: service_healthy }
+      auth-3:          { condition: service_healthy }
+      notifications-1: { condition: service_healthy }
+      notifications-2: { condition: service_healthy }
+      notifications-3: { condition: service_healthy }
+      jaeger:          { condition: service_started }
+
+  # rides
+  rides-1:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=42]
+    healthcheck: *node-healthcheck
+  rides-2:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=87]
+    healthcheck: *node-healthcheck
+  rides-3:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=130]
+    healthcheck: *node-healthcheck
+
+  # payments (set ERROR_RATE=0.3 on payments-2 when demoing targeted failures)
+  payments-1:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=28]
+    healthcheck: *node-healthcheck
+  payments-2:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=95, ERROR_RATE=0.0]
+    healthcheck: *node-healthcheck
+  payments-3:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=61]
+    healthcheck: *node-healthcheck
+
+  # maps
+  maps-1:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=110]
+    healthcheck: *node-healthcheck
+  maps-2:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=19]
+    healthcheck: *node-healthcheck
+  maps-3:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=75]
+    healthcheck: *node-healthcheck
+
+  # auth
+  auth-1:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=55]
+    healthcheck: *node-healthcheck
+  auth-2:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=140]
+    healthcheck: *node-healthcheck
+  auth-3:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=33]
+    healthcheck: *node-healthcheck
+
+  # notifications
+  notifications-1:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=88]
+    healthcheck: *node-healthcheck
+  notifications-2:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=22]
+    healthcheck: *node-healthcheck
+  notifications-3:
+    build: ./node-service
+    environment: [BASE_LATENCY_MS=103]
+    healthcheck: *node-healthcheck
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - backend
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "4317:4317"

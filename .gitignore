@@ -1,0 +1,19 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Go build artifacts
+goplane/meshproxy
+
+# OS / editor
+.DS_Store
+.claude/
+.idea/
+.vscode/
+
+# Logs / env
+*.log
+.env
