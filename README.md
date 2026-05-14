@@ -250,9 +250,6 @@ The existing `Trace`/`Span` classes power the UI span bars — they're synchrono
 **Why serve the frontend from FastAPI instead of a separate server?**
 The simulator is a single-page tool, not a product. Serving from the same FastAPI process eliminates CORS configuration, a separate build step, and a second container. The frontend is three files (HTML, CSS, JS) with no bundler.
 
-**Planned Level 4: Go control plane**
-The `goplane/` directory contains a Go HTTP server stub. The planned upgrade makes Go the owner of service discovery and routing configuration, with the Python backend pushing config updates to it via gRPC streaming — mirroring the xDS API pattern used by Istio and Envoy (where Istiod pushes config to Envoy proxies). The directory is kept in the repo to preserve this upgrade path; the current implementation routes end-to-end in Python.
-
 ---
 
 ## Production Gaps

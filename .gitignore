@@ -17,3 +17,7 @@ goplane/meshproxy
 # Logs / env
 *.log
 .env
+
+# Local-only guides (not pushed to GitHub)
+BUILD_GUIDE.md
+GUIDE.md
